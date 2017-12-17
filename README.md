@@ -1,28 +1,24 @@
 # SDP
-Simple Data Protocol - data link protocol for embedded systems and python bindings
+Simple Data Protocol - data link for embedded systems and python bindings
 
-Date: 08-Nov-2017
-Author:  Domen Jurkovic
-Version: v1
-Source:  http://damogranlabs.com/2017/12/sdp-simple-data-protocol/
-            https://github.com/damogranlabs/SDP
+Date: 08-Nov-2017  
+Author:  Domen Jurkovic  
+Version: v1  
+Source:
+- http://damogranlabs.com/2017/12/sdp-simple-data-protocol/
+- https://github.com/damogranlabs/SDP
 
 ## About SDP - Simple Data Protocol
-Main idea of this protocol is that user can send data between diferent "nodes" using simple functions, 
-while protocol will make sure the correct data is delivered and if not, retry or give up and report that to user.
+Main idea of this protocol is that user can send data between diferent "nodes" using simple functions, while protocol will make sure the correct data is delivered and if not, retry or give up and report that to user.
 
-It was primary designed for smaller embeded systems and payloads (up to 255 bytes per payload/message) to use with 
-UART (specifically STM32 LL UART drivers), but can be easily ported to other communication hardware. 
+It was primary designed for smaller embeded systems and payloads (up to 255 bytes per payload/message) to use with UART (specifically STM32 LL UART drivers), but can be easily ported to other communication hardware.  
 Tested for speeds up to 115200 bps.
 
-Although each node can initiate communication to the other end, it was primary meant for Master-Slave point-to-point 
-communication, where master poll other node for any new available data (or user must take care of possible 
-data collision and timing, or use other technique to notify other system for available data - like unused CTS/RTS line).
+Although each node can initiate communication to the other end, it was primary meant for Master-Slave point-to-point communication, where master poll other node for any new available data (or user must take care of possible data collision and timing, or use other technique to notify other system for available data - like unused CTS/RTS line).
 
-Protocol check each payload data with CRC-16 and responds with ACK (+ optional user defined respond). If CRC values does not match,
-NACK  is returned. If no response is received, this is considered as error and protocol retry.
+Protocol check each payload data with CRC-16 and responds with ACK (+ optional user defined respond). If CRC values does not match, NACK  is returned. If no response is received, this is considered as error and protocol retry.
 
-Note: In many ways SDP is very simillar to MIN (https://github.com/min-protocol/min) which was discovered after this library was already created. SDP is simpler and more straight forward therefore simpler to modify and customize. MIN has some other nice features which are lacking in SDP, but is more complex.
+**Note:** In many ways SDP is very simillar to **MIN** (https://github.com/min-protocol/min) which was discovered after this library was already created. SDP is simpler and more straight forward and therefore simpler to modify and customize. MIN has some other nice features which are lacking in SDP, but is more complex.
 
 ## More info:
 - Each communication port is called "node". One uC can communicate on more than one port, so more nodes can be initialised.
