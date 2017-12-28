@@ -145,10 +145,12 @@ class SDP_serial():
 
         if self.serial_port.is_open:  # only write to port if it is open
             try:
-                num = self.serial_port.in_waiting
-                if num > 0:
-                    # read all available bytes
-                    data = self.serial_port.read(num)
+                # read all available bytes
+                data = self.serial_port.read(self.serial_port.in_waiting)
+                
+                # if any data is read
+                if len(data) > 0:
+
                     ord_data = []
                     for d in data:  # append data to buffer, byte by byte
                         if sys.version[0] >= '3':

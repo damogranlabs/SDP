@@ -447,6 +447,8 @@ static bool rx_frame_timeout(SDP_data_t *node){
     if(HAL_GetTick() > (node->_rx_start_time + node->rx_msg_timeout)){
       node->_rx_state = SDP_RX_IDLE;
       
+      ring_buffer_flush(&node->_rx_buff);
+      
       sdp_debug(node, 100);
       return false;
     }
