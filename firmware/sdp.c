@@ -94,9 +94,9 @@ bool sdp_init_node(SDP_data_t *node, SDP_uart_t *uart_handle, uint8_t id, uint8_
 * @note This function should be polled frequently to handle incoming data from ring buffer asap.
 */
 void sdp_parse_rx_data(SDP_data_t *node){
-  uint16_t size = ring_buffer_size(&node->_rx_buff);
+  //uint16_t size = ring_buffer_size(&node->_rx_buff);
   
-  if(size >= 1){ // at least one byte is in buffer
+  while(ring_buffer_size(&node->_rx_buff)){ // at least one byte is in buffer
     switch(node->_rx_state){
       case SDP_RX_IDLE: 
         search_for_sof(node); 
@@ -123,10 +123,11 @@ void sdp_parse_rx_data(SDP_data_t *node){
         break;
     }
   }
+  /*
   else{ // even if buffer is empty, but data should be received 
     rx_frame_timeout(node); // check for timeout
-  } 
-  
+  }
+  */
 }
 
 /**
