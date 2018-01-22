@@ -339,7 +339,9 @@ class SDP():
         all bytes. When frame is received and parsed, this function calls message handler.
         Called from parser_thread().
         """
-        self.s.serial_read()  # read all available data from serial port
+        if not self.s.serial_read():  # read all available data from serial port
+            self.disable_receiver()
+            return
 
         if len(self.s.rx_buff):  # if rx buffer is not empty
             if self.__rx_state == _SDP_RX_IDLE:
@@ -391,6 +393,12 @@ class SDP():
                     self.__expect_response = True
 
                     while self.__expect_response:
+
+                        # TODO
+                        systime.sleep(0)    # python v3 threading error solved with this 
+                        # https://stackoverflow.com/questions/48356615/python-v3-threading-and-os-context-switching-changed-from-v2
+                        # https://stackoverflow.com/questions/48198172/python-v2-7-and-v3-6-behave-differently-but-the-same
+                        
                         # all incoming data are parsed in parser thread
                         if systime.time() > response_timeout:  # check for response timeout
                             # response not received in time
@@ -401,9 +409,8 @@ class SDP():
                         if self.ack == SDP_ACK:
                             return (True, self.rx_payload)  # success
                         else:
-                            # response received, but CRC validation failed
+                            # response received, but CRC validation failed -> retry
                             self.debug('CRC validation failure')
-                            #failure, retry
 
                             # delay to avoid receiver overrun
                             systime.sleep(SDP_DEFAULT_RETRANSMIT_DELAY)
@@ -411,7 +418,7 @@ class SDP():
                     # else:  parser didn't clear expect_response flag, reseponse not received in time
 
                 else:  # frame transmission unsuccessful
-                    self.debug('transmission failure (take %s' %
+                    self.debug('transmission failure (take %s)' %
                                (retransmit_count + 1))
                     # retry
                     systime.sleep(SDP_DEFAULT_RETRANSMIT_DELAY)
@@ -502,7 +509,7 @@ class SDP():
             self.__expect_response = False
         else:
             if self.ack == SDP_ACK:  # if message received correctly, pass it to user
-                self.user_message_handler(self.rx_payload)
+                self.user_message_handler(self.id, self.rx_payload)
             # message CRC failure, send response (return received payload)
             else:
                 if not self.send_response(self.rx_payload):
